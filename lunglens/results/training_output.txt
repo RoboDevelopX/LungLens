@@ -1,0 +1,48 @@
+Training on 4694 images (1217 normal, 3477 pneumonia)
+Validating on 538 images
+  epoch 1 step 20/147 loss 0.3254
+  epoch 1 step 40/147 loss 0.2986
+  epoch 1 step 60/147 loss 0.2753
+  epoch 1 step 80/147 loss 0.2567
+  epoch 1 step 100/147 loss 0.2392
+  epoch 1 step 120/147 loss 0.2263
+  epoch 1 step 140/147 loss 0.2153
+{'epoch': 1, 'train_loss': 0.21223037309792578, 'val_auc': 0.9873675175399313, 'minutes': 16.521693034966788}
+  saved new best model (val AUC 0.9874)
+  epoch 2 step 20/147 loss 0.1173
+  epoch 2 step 40/147 loss 0.1169
+  epoch 2 step 60/147 loss 0.1151
+  epoch 2 step 80/147 loss 0.1111
+  epoch 2 step 100/147 loss 0.1085
+  epoch 2 step 120/147 loss 0.1088
+  epoch 2 step 140/147 loss 0.1055
+{'epoch': 2, 'train_loss': 0.10360379187630958, 'val_auc': 0.9918271383788625, 'minutes': 17.764193876584372}
+  saved new best model (val AUC 0.9918)
+  epoch 3 step 20/147 loss 0.0936
+  epoch 3 step 40/147 loss 0.0922
+  epoch 3 step 60/147 loss 0.0872
+  epoch 3 step 80/147 loss 0.0904
+  epoch 3 step 100/147 loss 0.0895
+  epoch 3 step 120/147 loss 0.0845
+  epoch 3 step 140/147 loss 0.0820
+{'epoch': 3, 'train_loss': 0.0816401181501799, 'val_auc': 0.9930959844752948, 'minutes': 16.574229244391123}
+  saved new best model (val AUC 0.9931)
+  epoch 4 step 20/147 loss 0.0687
+  epoch 4 step 40/147 loss 0.0665
+  epoch 4 step 60/147 loss 0.0730
+  epoch 4 step 80/147 loss 0.0734
+  epoch 4 step 100/147 loss 0.0735
+  epoch 4 step 120/147 loss 0.0751
+  epoch 4 step 140/147 loss 0.0724
+{'epoch': 4, 'train_loss': 0.07284458660755028, 'val_auc': 0.9935251530079116, 'minutes': 16.668746566772462}
+  saved new best model (val AUC 0.9935)
+  epoch 5 step 20/147 loss 0.0663
+  epoch 5 step 40/147 loss 0.0631
+  epoch 5 step 60/147 loss 0.0646
+  epoch 5 step 80/147 loss 0.0617
+  epoch 5 step 100/147 loss 0.0629
+  epoch 5 step 120/147 loss 0.0633
+  epoch 5 step 140/147 loss 0.0647
+{'epoch': 5, 'train_loss': 0.0654849080482916, 'val_auc': 0.9936930885206747, 'minutes': 16.596338788668316}
+  saved new best model (val AUC 0.9937)
+Training finished.

@@ -1,0 +1,14 @@
+{
+  "test_images": 624,
+  "threshold": 0.13,
+  "accuracy": 0.9006,
+  "sensitivity": 0.9846,
+  "specificity": 0.7607,
+  "precision": 0.8727,
+  "f1": 0.9253,
+  "auc": 0.9554,
+  "true_positive": 384,
+  "false_negative": 6,
+  "true_negative": 178,
+  "false_positive": 56
+}
