@@ -34,7 +34,9 @@ class GradCAM:
     def _save_activation(self, module, inputs, output):
         self.activations = output.detach()
         # Ask autograd to call us back with the gradient of this tensor during backward().
-        output.register_hook(self._save_gradient)
+        # Under torch.no_grad() there is no gradient to wait for, so plain inference still works.
+        if output.requires_grad:
+            output.register_hook(self._save_gradient)
 
     def _save_gradient(self, grad):
         self.gradients = grad.detach()

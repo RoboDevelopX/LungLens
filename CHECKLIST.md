@@ -2,7 +2,7 @@
 
 Status key: ✅ done and verified by running · 🟡 written, not yet verified · ⏳ not started · ⛔ blocked
 
-Last updated: 2026-10-13, end of phase (d).
+Last updated: 2026-10-13, end of phase (e).
 
 ## Mandatory hackathon deliverables
 
@@ -22,7 +22,7 @@ Last updated: 2026-10-13, end of phase (d).
 | b | Model, training, evaluation, Colab notebook | ✅ trained + evaluated · 🟡 Colab notebook written, not run (no Colab here) | DenseNet121, 2 head + 9 fine-tune epochs on 4 CPU cores (106 min, early stop), best val AUROC 0.998; test results in `reports/metrics.json` |
 | c | Grad-CAM, calibration (ECE before/after), OOD guard | ✅ | own Grad-CAM matches `pytorch-grad-cam` (test); T = 1.61 fitted on val; guard measured in `reports/ood_eval.json`; sanity checks in `reports/sanity.json` |
 | d | Streamlit app (5 pages), < 3 s CPU inference | ✅ | 0.355 s median, 0.464 s max over 10 runs on 1 CPU thread (`reports/timing.json`); all 5 pages render with the real model (AppTest + browser screenshots) |
-| e | pytest suite | ⏳ | |
+| e | pytest suite | ✅ | `pytest tests` -> 92 passed in about 18 s (3 runs in a row); no dataset or weights needed. It caught a real bug: a Grad-CAM hook crashed a plain forward pass under `torch.no_grad()` (fixed, regression test added) |
 | f | README, WALKTHROUGH, demo script, PDFs | ⏳ | |
 
 ## Data and training rules from the brief

@@ -2,5 +2,7 @@
 -r requirements.txt
 pytest>=7.4
 grad-cam>=1.5          # ONLY used in tests to cross-check our own Grad-CAM
-reportlab>=4.0
-pygments>=2.15
+reportlab>=4.0         # LungLens_Code.pdf and LungLens_OnePager.pdf
+pygments>=2.15         # syntax highlighting in the Code PDF
+pypdf>=4.0             # checks the page count of the generated PDFs
+scikit-image>=0.21     # only for one public-domain "not an X-ray" sample photo (scripts/make_samples.py)
