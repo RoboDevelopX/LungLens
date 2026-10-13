@@ -2,14 +2,14 @@
 
 Status key: ✅ done and verified by running · 🟡 written, not yet verified · ⏳ not started · ⛔ blocked
 
-Last updated: 2026-10-13, end of phase (f).
+Last updated: 2026-10-13, after phase (f): demo video recorded.
 
 ## Mandatory hackathon deliverables
 
 | # | Requirement | Status | Where / evidence |
 |---|---|---|---|
 | 1 | Working prototype with user interaction (web app) | ✅ runs locally · ⏳ public deploy (Ribhu) | `streamlit run app.py`; every page rendered with the real model (screenshots in `docs/screenshots/`) |
-| 2 | Demo video, 2-3 min (Ribhu records; we write script + shot list) | ✅ script + shot list · ⏳ recording (Ribhu) | `docs/demo_script.md`: 2 min 45 s, every number checked against the app with the real model |
+| 2 | Demo video, 2-3 min | ✅ captioned recording · optional voice-over (Ribhu) | `LungLens_demo.mp4` (not in the repo): a 2 min 56 s screen recording of the real app with the trained model, 1920 x 1080, captions burned in; `docs/demo_script.md` matches it line by line |
 | 3 | One-page project description PDF | ✅ | `python scripts/make_one_pager.py` -> `LungLens_OnePager.pdf`; the script fails unless the PDF is exactly 1 page (checked with pypdf) |
 | 4 | GitHub repository + "Code PDF" of all code | ✅ Code PDF · ⏳ push to GitHub (Ribhu) | `python scripts/make_code_pdf.py` -> `LungLens_Code.pdf`: title page, file tree, 37 files with syntax highlighting and line numbers; the repo is a local git repo ready to push |
 | 5 | `docs/WALKTHROUGH.md` (architecture, each file, judge Q&A) | ✅ | architecture diagram, every file, key decisions, results and 13 judge questions filled from the report files by `scripts/sync_results.py` |
@@ -86,8 +86,8 @@ Honest findings so far:
 
 ## Manual steps left for Ribhu
 
-1. Create the GitHub repository `RoboDevelopX/lunglens` (the README and Colab notebook already use that URL) and push this repo.
-2. Create a GitHub release and attach `models/lunglens.pt` (28 MB; weights are never committed).
+1. Create an empty public GitHub repository `RoboDevelopX/LungLens` and push this repo (the README, the Colab notebook and the video's end card point there; GitHub links ignore capitals).
+2. Create a GitHub release `v1.0` and attach `models/lunglens.pt` (28 MB; weights are never committed).
 3. Deploy (Streamlit Community Cloud or a Hugging Face Space) with `LUNGLENS_WEIGHTS_URL` set to the release file's download link.
-4. Record the demo video with `docs/demo_script.md`.
+4. Optional: add your voice to `LungLens_demo.mp4`, reading `docs/demo_script.md` as the captions appear.
 5. Submit `LungLens_OnePager.pdf`, `LungLens_Code.pdf`, the repository link, the app link and the video.

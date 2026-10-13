@@ -41,4 +41,4 @@ Python · PyTorch · torchvision · scikit-learn · Streamlit · Altair · matpl
 
 ## Author
 
-Ribhu · github.com/RoboDevelopX
+Ribhu · github.com/RoboDevelopX/LungLens
