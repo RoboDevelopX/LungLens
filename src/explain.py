@@ -83,6 +83,15 @@ class Explanation:
     clinician: list[str]
 
 
+def format_chance(p: float) -> str:
+    """A probability as a whole percentage, but never "0%" or "100%": the model is never certain."""
+    if p < 0.005:
+        return "<1%"
+    if p >= 0.995:
+        return ">99%"
+    return f"{min(99, max(1, round(100 * p)))}%"  # the clamp stops rounding (0.5 -> 0) from showing 0%
+
+
 def explain(
     p: float,
     low: float,
@@ -95,7 +104,7 @@ def explain(
 ) -> Explanation:
     """Build the text shown in the app's explanation panel."""
     decision = decide(p, low, high)
-    pct = f"{100 * p:.0f}%"
+    pct = format_chance(p)
 
     if decision == "pneumonia":
         headline = "Signs consistent with pneumonia"
@@ -116,7 +125,13 @@ def explain(
             "Rather than guess, LungLens asks a clinician to review this X-ray.",
         ]
 
-    if decision == "normal":
+    empty_map = cam is not None and float(np.max(cam)) == 0.0  # Grad-CAM keeps only evidence FOR pneumonia
+    if empty_map:
+        lay.append(
+            "The heatmap is empty: no part of this X-ray stood out as evidence for pneumonia, so there is nothing "
+            "to highlight."
+        )
+    elif decision == "normal":
         lay.append(
             "The coloured overlay shows where the AI found the most pneumonia-like evidence, even though overall it "
             "was too weak to raise a flag. The colours are scaled to this image's strongest area, so red here does "
@@ -128,16 +143,19 @@ def explain(
             "that area's influence. It shows where the evidence came from, not why, and it is not a map of the infection."
         )
 
+    p_text = "> 0.999" if p > 0.9995 else ("< 0.001" if p < 0.0005 else f"= {p:.3f}")  # never "1.000"
     clin = [
-        f"Calibrated P(pneumonia) = {p:.3f}" + (f" (temperature T = {temperature:.2f})" if temperature else ""),
+        f"Calibrated P(pneumonia) {p_text}" + (f" (temperature T = {temperature:.2f})" if temperature else ""),
         f"Decision bands: normal < {low:.2f} <= inconclusive <= {high:.2f} < pneumonia",
     ]
 
-    if cam is not None:
+    if empty_map:
+        clin.append("Grad-CAM: empty map (no region stood out as evidence for pneumonia)")
+    elif cam is not None:
         zones = attention_zones(cam)
         top_zone, share = max(zones.items(), key=lambda kv: kv[1])
         clin.append(f"Grad-CAM: largest share of attention ({100 * share:.0f}%) in the {top_zone}")
-    if border_share is not None:
+    if border_share is not None and not empty_map:
         clin.append(f"Grad-CAM weight in the outer 10% border band: {100 * border_share:.0f}%")
         if border_share > border_warn:
             lay.append(

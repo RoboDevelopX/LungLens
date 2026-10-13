@@ -1,0 +1,9 @@
+{
+  "runs": 10,
+  "median_s": 0.355,
+  "max_s": 0.464,
+  "device": "cpu",
+  "torch_threads": 1,
+  "machine": "x86_64, Linux, Python 3.13.16, torch 2.14.1+cpu",
+  "demo_mode": false
+}

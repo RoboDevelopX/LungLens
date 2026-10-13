@@ -1,0 +1,17 @@
+# Calm, high-contrast "medical" theme shared by every page.
+[theme]
+base = "light"
+primaryColor = "#2a78d6"              # calm blue for buttons, sliders, links
+backgroundColor = "#fcfcfb"           # near-white page
+secondaryBackgroundColor = "#f1f0ec"  # sidebar and input fields
+textColor = "#0b0b0b"                 # near-black text (contrast > 18:1)
+font = "sans serif"
+
+[server]
+maxUploadSize = 20                    # MB; X-ray JPEG/PNG files are far smaller
+
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "minimal"               # hide developer menu items and the "Deploy" button

@@ -2,13 +2,13 @@
 
 Status key: ✅ done and verified by running · 🟡 written, not yet verified · ⏳ not started · ⛔ blocked
 
-Last updated: 2026-10-13, end of phase (c).
+Last updated: 2026-10-13, end of phase (d).
 
 ## Mandatory hackathon deliverables
 
 | # | Requirement | Status | Where / evidence |
 |---|---|---|---|
-| 1 | Working prototype with user interaction (web app) | ⏳ | `app.py`, `pages/` (phase d) |
+| 1 | Working prototype with user interaction (web app) | ✅ runs locally · ⏳ public deploy (Ribhu) | `streamlit run app.py`; every page rendered with the real model (screenshots in `docs/screenshots/`) |
 | 2 | Demo video, 2-3 min (Ribhu records; we write script + shot list) | ⏳ | `docs/demo_script.md` (phase f) |
 | 3 | One-page project description PDF | ⏳ | `scripts/make_one_pager.py` -> `LungLens_OnePager.pdf` (phase f) |
 | 4 | GitHub repository + "Code PDF" of all code | ⏳ | local git repo now; `scripts/make_code_pdf.py` (phase f); push needs a GitHub repo |
@@ -21,7 +21,7 @@ Last updated: 2026-10-13, end of phase (c).
 | a | Scaffolding, config, download script, patient-grouped split, data pipeline | ✅ | commit "Phase a"; `src/data.py` verified by the phase (b) training run |
 | b | Model, training, evaluation, Colab notebook | ✅ trained + evaluated · 🟡 Colab notebook written, not run (no Colab here) | DenseNet121, 2 head + 9 fine-tune epochs on 4 CPU cores (106 min, early stop), best val AUROC 0.998; test results in `reports/metrics.json` |
 | c | Grad-CAM, calibration (ECE before/after), OOD guard | ✅ | own Grad-CAM matches `pytorch-grad-cam` (test); T = 1.61 fitted on val; guard measured in `reports/ood_eval.json`; sanity checks in `reports/sanity.json` |
-| d | Streamlit app (5 pages), < 3 s CPU inference | ⏳ | |
+| d | Streamlit app (5 pages), < 3 s CPU inference | ✅ | 0.355 s median, 0.464 s max over 10 runs on 1 CPU thread (`reports/timing.json`); all 5 pages render with the real model (AppTest + browser screenshots) |
 | e | pytest suite | ⏳ | |
 | f | README, WALKTHROUGH, demo script, PDFs | ⏳ | |
 
@@ -49,6 +49,23 @@ Last updated: 2026-10-13, end of phase (c).
 | "Inconclusive" zone between two configurable thresholds | ✅ | 40%-60% around the 0.5 threshold (odds within 1.5x; or set `inconclusive_low/high`); 3.4% of test X-rays land in it |
 | OOD guard: shape, grayscale and histogram checks + energy score | ✅ | thresholds from the 4,168 train X-rays only (`reports/ood_xray_stats.json`); flagged: test chest X-rays 0.5%, bone X-rays 61.5%, brain MRIs 27.5%, photos/misc 72.4%, synthetic 72.5% (`reports/ood_eval.json`) |
 | Sanity check: model randomisation + correct vs incorrect heatmaps + edge/marker attention | ✅ | randomisation test passes on 50 test X-rays (mean rank correlation 0.03 after randomising the classifier, 0.00 after also randomising the last dense block); 30 of 624 test heatmaps (4.8%) put > 50% of their weight on the outer 10% border (`reports/sanity.json`, `scripts/sanity_check.py`) |
+
+## App features from the brief
+
+| Feature | Status | Evidence |
+|---|---|---|
+| Upload PNG/JPG, or pick a bundled sample (with attribution) | ✅ | upload tested in the browser; 7 test X-rays copied without re-encoding (pixels verified identical) + 2 non-X-rays in `assets/samples/` (`scripts/make_samples.py` checks each one through the app's pipeline) |
+| Normal / Pneumonia with calibrated confidence | ✅ | never shows 0% or 100% (`<1%` / `>99%`); clinician view shows the calibrated probability and T |
+| Grad-CAM overlay with opacity slider, side-by-side view | ✅ | Screen page; an empty heatmap is explained instead of pointing at a zone |
+| Explanation panel: plain language + "Clinician view" | ✅ | `src/explain.py`; caution text when > 50% of the heatmap sits on the image border |
+| Input check before any prediction | ✅ | photo and document samples are refused in the app |
+| "Inconclusive, please consult a clinician" zone | ✅ | 40%-60%; the one missed pneumonia (48%) lands in it (sample X-ray 7) |
+| Sensitivity-first threshold + interactive threshold slider | ✅ | Model Performance page; the slider only changes that page's view |
+| Prominent disclaimer | ✅ | banner on every page + sidebar |
+| Sanity Check page (randomisation, correct vs incorrect, edges) | ✅ | `pages/sanity_check.py`, figures from `scripts/sanity_check.py` |
+| How It Works, Model Performance (ROC, PR, confusion matrix, CIs), Limitations & Ethics (model card) | ✅ | `pages/`; every number read from `reports/*.json` |
+| DEMO_MODE clearly labelled | ✅ | red banner when weights are missing or `LUNGLENS_DEMO_MODE=1` (checked with AppTest) |
+| Deployable to HF Spaces / Streamlit Cloud | 🟡 | weights download from `LUNGLENS_WEIGHTS_URL` tested locally; the actual deploy needs Ribhu's accounts |
 
 ## Results so far (copied from `reports/metrics.json`, phase c, calibrated)
 

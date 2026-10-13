@@ -11,4 +11,5 @@ matplotlib>=3.7
 pillow>=10.0
 pyyaml>=6.0
 requests>=2.31
-streamlit>=1.35
+streamlit>=1.65        # st.navigation + width="stretch" on charts; tested with 1.65.0
+altair>=5.0            # interactive threshold chart (also installed by streamlit)

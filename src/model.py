@@ -20,6 +20,7 @@ import torch.nn as nn
 from torchvision import models
 
 BACKBONES = ("densenet121", "resnet50")
+DISPLAY_NAMES = {"densenet121": "DenseNet121", "resnet50": "ResNet50"}  # how the app and docs write them
 
 
 class LungLensNet(nn.Module):

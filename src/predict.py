@@ -201,7 +201,7 @@ def main() -> None:
     result = predictor.predict(Image.open(args.image))
     print(f"input check: {result.ood.verdict}  {result.ood.reasons}")
     if result.explanation:
-        print(f"P(pneumonia) = {result.probability:.3f}  ->  {result.explanation.decision}")
+        print(f"P(pneumonia) = {result.probability:.4g}  ->  {result.explanation.decision}")
         print(result.explanation.headline)
         for line in result.explanation.clinician:
             print("  -", line)

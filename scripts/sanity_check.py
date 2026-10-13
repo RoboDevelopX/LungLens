@@ -29,6 +29,11 @@ N_RANDOMIZATION = 50
 BAND = 0.10
 
 
+def p_text(p: float) -> str:
+    """P(pneumonia) for figure titles, never "1.00" or "0.00": the model is never certain."""
+    return "P(pneumonia) > 0.99" if p >= 0.995 else ("P(pneumonia) < 0.01" if p < 0.005 else f"P(pneumonia) = {p:.2f}")
+
+
 def verdict_randomization(mean_corr: float) -> str:
     if mean_corr < 0.3:
         return (f"Pass. With randomised weights the heatmaps change almost completely (mean correlation "
@@ -182,7 +187,7 @@ def main() -> None:
             if c < len(rows):
                 i = rows.index[c]
                 _, view = load(test.loc[i, "path"])
-                show(ax, overlay(view, trained_maps[i], 0.6), f"{outcome}\nP(pneumonia) = {test.loc[i, 'p']:.2f}")
+                show(ax, overlay(view, trained_maps[i], 0.6), f"{outcome}\n{p_text(test.loc[i, 'p'])}")
     fig.tight_layout()
     fig.savefig(figures / "sanity_examples.png", dpi=130, facecolor="white")
     plt.close(fig)
@@ -204,7 +209,7 @@ def main() -> None:
         _, view = load(test.loc[i, "path"])
         fig, axes = plt.subplots(1, 2, figsize=(6, 3))
         show(axes[0], view, "Chest X-ray (test set)")
-        show(axes[1], overlay(view, trained_maps[i], 0.6), f"Grad-CAM, P(pneumonia) = {test.loc[i, 'p']:.2f}")
+        show(axes[1], overlay(view, trained_maps[i], 0.6), f"Grad-CAM, {p_text(test.loc[i, 'p'])}")
         fig.tight_layout()
         fig.savefig(figures / "onepager_example.png", dpi=150, facecolor="white")
         plt.close(fig)
