@@ -1,0 +1,6 @@
+# Development, tests and PDF generation (not needed to run the app).
+-r requirements.txt
+pytest>=7.4
+grad-cam>=1.5          # ONLY used in tests to cross-check our own Grad-CAM
+reportlab>=4.0
+pygments>=2.15

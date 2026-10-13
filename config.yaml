@@ -1,0 +1,53 @@
+# LungLens configuration: every tunable number lives here, so code and
+# reports never hide "magic numbers". Paths are relative to the repo root.
+
+paths:
+  data_dir: data                    # override with env var LUNGLENS_DATA_DIR
+  splits_csv: reports/splits.csv    # written by `python -m src.split`; committed (file names only, no images)
+  model: models/lunglens.pt         # trained weights + calibration (gitignored)
+  reports_dir: reports
+  figures_dir: reports/figures
+
+seed: 42
+classes: [NORMAL, PNEUMONIA]        # index 0 = NORMAL, index 1 = PNEUMONIA
+
+split:
+  val_fraction: 0.20                # share of official train images moved to our val set
+  # The official 16-image val folder is ignored (too small to be useful).
+
+image:
+  resize: 256                       # shorter side resized to this...
+  crop: 224                         # ...then centre-cropped to this (DenseNet/ResNet input)
+  mean: [0.485, 0.456, 0.406]       # ImageNet normalisation (pretrained backbone expects it)
+  std: [0.229, 0.224, 0.225]
+
+augment:                            # train split only; no horizontal flip (anatomy is not symmetric)
+  rotation_deg: 7
+  crop_scale: [0.85, 1.0]
+  brightness: 0.15
+  contrast: 0.15
+
+model:
+  backbone: densenet121             # or resnet50
+  pretrained: true
+
+train:
+  batch_size: 32
+  num_workers: 4
+  head_epochs: 2                    # stage 1: backbone frozen, train classifier only
+  head_lr: 1.0e-3
+  finetune_epochs: 10               # stage 2: unfreeze everything
+  finetune_lr: 1.0e-4
+  weight_decay: 1.0e-4
+  early_stop_patience: 3            # epochs without val AUROC improvement
+
+decision:
+  target_sensitivity: 0.95          # operating threshold chosen on val to reach this recall
+  inconclusive_margin: 0.10         # "Inconclusive" band = threshold +/- margin (calibrated prob)
+
+ood:
+  min_side_px: 150
+  aspect_ratio_range: [0.8, 2.3]    # width / height; real dataset: 1st pct 0.99, 99th pct 2.21
+  max_color_diff: 12.0              # mean |R-G|,|G-B| on 0-255 scale; X-rays are grayscale
+  min_std: 20.0                     # too flat = blank / not an X-ray
+  energy_percentile: 99             # energy threshold = this percentile of val energies

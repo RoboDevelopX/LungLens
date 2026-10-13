@@ -1,0 +1,24 @@
+# Data and weights are never committed (see README: "Getting the data" / "Getting the model")
+data/
+models/*
+!models/.gitkeep
+*.pt
+*.pth
+*.zip
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Generated PDFs are built by scripts/make_*.py
+LungLens_Code.pdf
+LungLens_OnePager.pdf
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
