@@ -50,8 +50,15 @@ decision:
   inconclusive_high: null           # (must contain the operating threshold); null = use the odds factor
 
 ood:
-  min_side_px: 150
-  aspect_ratio_range: [0.8, 2.3]    # width / height; real dataset: 1st pct 0.99, 99th pct 2.21
-  max_color_diff: 12.0              # mean |R-G|,|G-B| on 0-255 scale; X-rays are grayscale
-  min_std: 20.0                     # too flat = blank / not an X-ray
+  # Thresholds are set from the 4,168 TRAIN X-rays (python -m src.ood --stats -> reports/ood_xray_stats.json),
+  # never tuned on the non-X-ray test images. Percentiles quoted are of the real X-rays.
+  min_side_px: 150                  # 0.5th percentile of the shorter side is 186 px
+  aspect_ratio_range: [0.8, 2.6]    # width/height; 0.5th-99.5th percentile 0.96-2.51 (warn only)
+  max_color_diff: 12.0              # mean |R-G|,|G-B| (0-255); 99.5th percentile is 0.0 (X-rays are gray)
+  min_std: 20.0                     # contrast; 0.5th percentile is 30.7
+  max_frac_white: 0.30              # pixels > 235; 99.5th percentile is 0.06 (room left for white screenshot borders)
+  max_frac_black: 0.55              # pixels < 20; 99.5th percentile is 0.27 (about 2x margin)
   energy_percentile: 99             # energy threshold = this percentile of val energies
+
+explain:
+  border_warn: 0.50                 # caution if > 50% of Grad-CAM weight sits in the outer 10% border band

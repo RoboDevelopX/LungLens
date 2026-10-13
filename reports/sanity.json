@@ -1,0 +1,36 @@
+{
+  "randomization": {
+    "n_images": 50,
+    "n_flat_trained_maps_skipped": 10,
+    "classifier": {
+      "mean": 0.0344,
+      "p5": -0.422,
+      "p95": 0.5382,
+      "n_constant_maps": 0
+    },
+    "top": {
+      "mean": 0.0013,
+      "p5": -0.3901,
+      "p95": 0.4183,
+      "n_constant_maps": 0
+    },
+    "verdict": "Pass. With randomised weights the heatmaps change almost completely (mean correlation 0.00), so Grad-CAM reflects what the model learned, not just image edges."
+  },
+  "border": {
+    "band": 0.1,
+    "uniform_share": 0.36,
+    "n_images": 624,
+    "median": 0.2781,
+    "mean": 0.296,
+    "warn": 0.5,
+    "n_above_warn": 30,
+    "share_above_warn": 0.0481,
+    "median_by_outcome": {
+      "false negative": 0.354,
+      "false positive": 0.284,
+      "true negative": 0.397,
+      "true positive": 0.272
+    },
+    "verdict": "Mostly reassuring. The median border share (28%) is below the 36% expected from evenly spread attention, so most heatmaps concentrate inside the image. 30 test X-rays (4.8%) still put more than 50% of their attention on the edges, and the app adds a caution message for results like those."
+  }
+}

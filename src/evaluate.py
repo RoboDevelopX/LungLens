@@ -3,13 +3,17 @@
 What this script does, in order:
   1. Runs the trained model once over our val and test images and saves the
      raw scores to reports/predictions.csv.
-  2. Picks the operating threshold on VAL ONLY: the highest threshold that
-     still catches >= 95% of pneumonia cases (sensitivity-first, because a
-     screening tool should rarely miss a sick patient), capped at 0.5 so an
-     X-ray the model rates more likely pneumonia than not is never "normal".
-  3. Applies that fixed threshold to TEST and reports accuracy, sensitivity,
+  2. Fits the calibration temperature on VAL ONLY (src/calibration.py) and
+     reports the expected calibration error (ECE) before and after.
+  3. Picks the operating threshold on VAL ONLY, on calibrated probabilities:
+     the highest threshold that still catches >= 95% of pneumonia cases
+     (sensitivity-first, because a screening tool should rarely miss a sick
+     patient), capped at 0.5 so an X-ray the model rates more likely
+     pneumonia than not is never "normal". Then the "Inconclusive" band
+     around it and the OOD energy threshold, also from VAL.
+  4. Applies those frozen settings to TEST and reports accuracy, sensitivity,
      specificity, precision, F1 and AUROC, each with a bootstrap 95% CI.
-  4. Writes everything to reports/metrics.json, then draws every figure from
+  5. Writes everything to reports/metrics.json, then draws every figure from
      that file (never from numbers typed by hand).
 
 Usage:
@@ -26,7 +30,10 @@ import pandas as pd
 import torch
 from sklearn.metrics import average_precision_score, precision_recall_curve, roc_auc_score, roc_curve
 
+from src.calibration import expected_calibration_error, fit_temperature, reliability_bins, softmax_probs
 from src.data import make_loaders
+from src.explain import band_from_config, decide
+from src.ood import energy_score
 from src.model import file_fingerprint, load_checkpoint
 from src.utils import get_device, load_config, load_json, repo_path, save_json
 
@@ -49,10 +56,7 @@ def predict_logits(model, loader, device) -> tuple[np.ndarray, np.ndarray]:
 
 def softmax_pneumonia(logits: np.ndarray, temperature: float = 1.0) -> np.ndarray:
     """P(pneumonia) from the two logits. temperature=1 means 'uncalibrated'."""
-    z = logits / temperature
-    z = z - z.max(axis=1, keepdims=True)  # subtract the max for numerical stability
-    e = np.exp(z)
-    return e[:, 1] / e.sum(axis=1)
+    return softmax_probs(logits, temperature)[:, 1]
 
 
 # ---------------------------------------------------------------------------
@@ -186,14 +190,40 @@ def run_evaluation(cfg: dict) -> dict:
 
     val_logits, val_labels = outputs["val"]
     test_logits, test_labels = outputs["test"]
-    val_probs = softmax_pneumonia(val_logits)
-    test_probs = softmax_pneumonia(test_logits)
+
+    # Calibration: fit T on val, then measure ECE before (T=1) and after on val and test.
+    temperature = fit_temperature(val_logits, val_labels)
+    calibration = {"temperature": temperature, "n_bins": 15, "fitted_on": "validation"}  # full precision, used by the app
+    for split, (logits, labels) in (("val", outputs["val"]), ("test", outputs["test"])):
+        calibration[f"{split}_ece_before"] = round(expected_calibration_error(softmax_probs(logits), labels), 4)
+        calibration[f"{split}_ece_after"] = round(expected_calibration_error(softmax_probs(logits, temperature), labels), 4)
+    calibration["test_reliability_before"] = reliability_bins(softmax_probs(test_logits), test_labels)
+    calibration["test_reliability_after"] = reliability_bins(softmax_probs(test_logits, temperature), test_labels)
+    calibration["note"] = (
+        f"Fitted where {100 * val_labels.mean():.1f}% of validation images show pneumonia; the test set has "
+        f"{100 * test_labels.mean():.1f}%. Calibration only holds for a similar mix of patients."
+    )
+
+    # From here on, every probability is CALIBRATED.
+    val_probs = softmax_pneumonia(val_logits, temperature)
+    test_probs = softmax_pneumonia(test_logits, temperature)
 
     # Operating threshold: chosen on val, then frozen before looking at test.
     target, cap = cfg["decision"]["target_sensitivity"], cfg["decision"]["max_threshold"]
     threshold_for_target = threshold_for_sensitivity(val_labels, val_probs, target)
     threshold = choose_threshold(val_labels, val_probs, target, cap)
     val_at_threshold = binary_metrics(val_labels, val_probs, threshold)
+
+    # "Inconclusive" band around the threshold, and how it behaves on test.
+    low, high = band_from_config(threshold, cfg["decision"])
+    test_decisions = np.array([decide(p, low, high) for p in test_probs])
+    decided = test_decisions != "inconclusive"
+    correct_when_decided = (test_decisions[decided] == "pneumonia") == (test_labels[decided] == 1)
+
+    # OOD energy threshold: the given percentile of VALIDATION energies.
+    percentile = cfg["ood"]["energy_percentile"]
+    energy_threshold = float(np.percentile(energy_score(val_logits), percentile))
+    test_energy_flag_rate = float(np.mean(energy_score(test_logits) > energy_threshold))
 
     fpr, tpr, roc_thr = roc_curve(test_labels, test_probs)
     prec, rec, _ = precision_recall_curve(test_labels, test_probs)
@@ -216,7 +246,8 @@ def run_evaluation(cfg: dict) -> dict:
             "test_normal": int(np.sum(test_labels == 0)),
             "test_pneumonia": int(np.sum(test_labels == 1)),
         },
-        "probabilities": {"temperature": 1.0, "calibrated": False},
+        "probabilities": {"temperature": temperature, "calibrated": True},
+        "calibration": calibration,
         "operating_point": {
             "rule": f"highest threshold with validation sensitivity >= {target}, capped at {cap}",
             "target_sensitivity": target,
@@ -225,6 +256,20 @@ def run_evaluation(cfg: dict) -> dict:
             "capped": bool(threshold_for_target > cap),
             "threshold": float(threshold),  # full precision: the app must reproduce these decisions exactly
             "val_metrics": rounded(val_at_threshold),
+        },
+        "decision": {
+            "rule": ("fixed in config.yaml" if None not in (cfg["decision"].get("inconclusive_low"), cfg["decision"].get("inconclusive_high"))
+                     else f"odds within a factor of {cfg['decision']['inconclusive_odds_factor']} of the threshold's odds"),
+            "odds_factor": cfg["decision"]["inconclusive_odds_factor"],
+            "low": low,
+            "high": high,
+            "test_inconclusive_rate": round(float(np.mean(~decided)), 4),
+            "test_accuracy_when_decided": round(float(np.mean(correct_when_decided)), 4),
+        },
+        "ood": {
+            "energy_percentile": percentile,
+            "energy_threshold": energy_threshold,
+            "test_xray_energy_flag_rate": round(test_energy_flag_rate, 4),
         },
         "test": {
             "auroc": round(float(roc_auc_score(test_labels, test_probs)), 4),
@@ -259,6 +304,16 @@ def print_summary(metrics: dict) -> None:
         lo, hi = op["ci95"][k]
         print(f"  {k:<12} {value:.3f}   95% CI [{lo:.3f}, {hi:.3f}]")
     print(f"  confusion    {op['confusion']}")
+    cal = metrics.get("calibration")
+    if cal:
+        print(f"calibration: T = {cal['temperature']:.3f}; ECE val {cal['val_ece_before']:.4f} -> {cal['val_ece_after']:.4f}, "
+              f"test {cal['test_ece_before']:.4f} -> {cal['test_ece_after']:.4f}")
+    if "decision" in metrics:
+        d = metrics["decision"]
+        print(f"inconclusive band [{d['low']:.3f}, {d['high']:.3f}]: {100 * d['test_inconclusive_rate']:.1f}% of test images; "
+              f"accuracy on the rest {d['test_accuracy_when_decided']:.3f}")
+        print(f"OOD energy threshold (val p{metrics['ood']['energy_percentile']}): {metrics['ood']['energy_threshold']:.3f}; "
+              f"flags {100 * metrics['ood']['test_xray_energy_flag_rate']:.1f}% of test X-rays")
     half = metrics["test"]["at_0.5"]
     print(f"for comparison at threshold 0.5: sensitivity {half['metrics']['sensitivity']:.3f}, "
           f"specificity {half['metrics']['specificity']:.3f}, accuracy {half['metrics']['accuracy']:.3f}")
@@ -372,6 +427,29 @@ def make_figures(metrics: dict, history: dict | None, out_dir) -> list:
     ax.legend(frameon=False, fontsize=8.5, loc="lower center", ncol=2, labelcolor=INK_2)
     ax.set_title("Sensitivity vs specificity trade-off", fontsize=9.5)
     save(fig, "threshold_tradeoff.png")
+
+    # Reliability diagram: confidence vs accuracy, before and after temperature scaling.
+    cal = metrics.get("calibration")
+    if cal:
+        fig, axes = plt.subplots(1, 2, figsize=(8.4, 3.8), sharey=True)
+        for ax, key, title in ((axes[0], "before", "Before (T = 1)"), (axes[1], "after", f"After (T = {cal['temperature']:.2f})")):
+            _style_axes(ax)
+            bins = pd.DataFrame(cal[f"test_reliability_{key}"])
+            ax.plot([0.5, 1], [0.5, 1], color=AXIS, linewidth=1, label="perfect calibration")
+            ax.bar((bins["lo"] + bins["hi"]) / 2, bins["accuracy"], width=(bins["hi"] - bins["lo"]) * 0.85,
+                   color=BLUE, alpha=0.85)
+            ax.plot(bins["confidence"], bins["accuracy"], "o", markersize=5, color=INK_2)
+            for _, b in bins.iterrows():  # bin sizes differ a lot, so show them: small bins are noisy
+                ax.text((b["lo"] + b["hi"]) / 2, b["accuracy"] + 0.03, f"n={int(b['count'])}", ha="center",
+                        fontsize=7, color=MUTED)
+            ece = cal[f"test_ece_{key}"]
+            ax.set_title(f"{title}: test ECE {ece:.3f}", fontsize=9.5)
+            ax.set_xlabel("Confidence (probability of the predicted class)")
+            ax.set_xlim(0.5, 1.0)
+            ax.set_ylim(0, 1.08)
+        axes[0].set_ylabel("Accuracy in bin")
+        axes[0].legend(frameon=False, fontsize=7.5, loc="upper left", labelcolor=INK_2)
+        save(fig, "reliability_diagram.png")
 
     # Training curves (validation AUROC and losses per epoch).
     if history and history.get("epochs"):

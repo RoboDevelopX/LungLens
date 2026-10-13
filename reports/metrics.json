@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-13T09:52:23+00:00",
+  "generated_at": "2026-10-13T09:57:23+00:00",
   "note": "All numbers computed by src/evaluate.py on the held-out official test set. Nothing is hand-entered.",
   "checkpoint": {
     "path": "models/lunglens.pt",
@@ -16,14 +16,140 @@
     "test_pneumonia": 390
   },
   "probabilities": {
-    "temperature": 1.0,
-    "calibrated": false
+    "temperature": 1.6116544008255005,
+    "calibrated": true
+  },
+  "calibration": {
+    "temperature": 1.6116544008255005,
+    "n_bins": 15,
+    "fitted_on": "validation",
+    "val_ece_before": 0.0166,
+    "val_ece_after": 0.0068,
+    "test_ece_before": 0.1986,
+    "test_ece_after": 0.1733,
+    "test_reliability_before": [
+      {
+        "lo": 0.4667,
+        "hi": 0.5333,
+        "count": 1,
+        "confidence": 0.5306758804355444,
+        "accuracy": 0.0
+      },
+      {
+        "lo": 0.5333,
+        "hi": 0.6,
+        "count": 9,
+        "confidence": 0.5676647859408477,
+        "accuracy": 0.6666666666666666
+      },
+      {
+        "lo": 0.6,
+        "hi": 0.6667,
+        "count": 13,
+        "confidence": 0.6406378452668224,
+        "accuracy": 0.46153846153846156
+      },
+      {
+        "lo": 0.6667,
+        "hi": 0.7333,
+        "count": 10,
+        "confidence": 0.6951313156758306,
+        "accuracy": 0.8
+      },
+      {
+        "lo": 0.7333,
+        "hi": 0.8,
+        "count": 11,
+        "confidence": 0.7716430766902314,
+        "accuracy": 0.18181818181818182
+      },
+      {
+        "lo": 0.8,
+        "hi": 0.8667,
+        "count": 13,
+        "confidence": 0.8386091667856991,
+        "accuracy": 0.38461538461538464
+      },
+      {
+        "lo": 0.8667,
+        "hi": 0.9333,
+        "count": 24,
+        "confidence": 0.8966708706610786,
+        "accuracy": 0.3333333333333333
+      },
+      {
+        "lo": 0.9333,
+        "hi": 1.0,
+        "count": 543,
+        "confidence": 0.996675178944534,
+        "accuracy": 0.8250460405156538
+      }
+    ],
+    "test_reliability_after": [
+      {
+        "lo": 0.4667,
+        "hi": 0.5333,
+        "count": 2,
+        "confidence": 0.521444258115362,
+        "accuracy": 0.0
+      },
+      {
+        "lo": 0.5333,
+        "hi": 0.6,
+        "count": 19,
+        "confidence": 0.5687009967935869,
+        "accuracy": 0.5263157894736842
+      },
+      {
+        "lo": 0.6,
+        "hi": 0.6667,
+        "count": 15,
+        "confidence": 0.6297560069678932,
+        "accuracy": 0.6666666666666666
+      },
+      {
+        "lo": 0.6667,
+        "hi": 0.7333,
+        "count": 15,
+        "confidence": 0.7042135353374254,
+        "accuracy": 0.3333333333333333
+      },
+      {
+        "lo": 0.7333,
+        "hi": 0.8,
+        "count": 20,
+        "confidence": 0.7686781955038816,
+        "accuracy": 0.25
+      },
+      {
+        "lo": 0.8,
+        "hi": 0.8667,
+        "count": 18,
+        "confidence": 0.8340449873662729,
+        "accuracy": 0.6111111111111112
+      },
+      {
+        "lo": 0.8667,
+        "hi": 0.9333,
+        "count": 38,
+        "confidence": 0.9080827786756468,
+        "accuracy": 0.3684210526315789
+      },
+      {
+        "lo": 0.9333,
+        "hi": 1.0,
+        "count": 497,
+        "confidence": 0.9924605260895488,
+        "accuracy": 0.8611670020120724
+      }
+    ],
+    "note": "Fitted where 74.3% of validation images show pneumonia; the test set has 62.5%. Calibration only holds for a similar mix of patients."
   },
   "operating_point": {
     "rule": "highest threshold with validation sensitivity >= 0.95, capped at 0.5",
     "target_sensitivity": 0.95,
     "max_threshold": 0.5,
-    "threshold_for_target": 0.9963628649711609,
+    "threshold_for_target": 0.9701913374656528,
     "capped": true,
     "threshold": 0.5,
     "val_metrics": {
@@ -33,6 +159,19 @@
       "precision": 0.9547,
       "f1": 0.9768
     }
+  },
+  "decision": {
+    "rule": "odds within a factor of 1.5 of the threshold's odds",
+    "odds_factor": 1.5,
+    "low": 0.4,
+    "high": 0.6,
+    "test_inconclusive_rate": 0.0337,
+    "test_accuracy_when_decided": 0.7844
+  },
+  "ood": {
+    "energy_percentile": 99,
+    "energy_threshold": -0.5894439838471808,
+    "test_xray_energy_flag_rate": 0.0048
   },
   "test": {
     "auroc": 0.9497,
@@ -126,66 +265,22 @@
         0.0,
         0.0,
         0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0043,
-        0.0043,
-        0.0043,
-        0.0043,
-        0.0043,
         0.0043,
         0.0043,
         0.0085,
         0.0085,
-        0.0085,
-        0.0085,
         0.0128,
         0.0128,
         0.0128,
         0.0128,
-        0.0128,
         0.0171,
         0.0171,
-        0.0171,
-        0.0171,
-        0.0171,
-        0.0171,
-        0.0171,
-        0.0214,
-        0.0256,
-        0.0256,
         0.0256,
         0.0256,
         0.0299,
         0.0299,
         0.0299,
-        0.0342,
-        0.0342,
-        0.0342,
-        0.0342,
-        0.0342,
-        0.0342,
+        0.0299,
         0.0342,
         0.0342,
         0.0385,
@@ -196,11 +291,8 @@
         0.047,
         0.0513,
         0.0513,
-        0.0513,
         0.0598,
         0.0598,
-        0.0641,
-        0.0641,
         0.0641,
         0.0641,
         0.0684,
@@ -211,8 +303,6 @@
         0.0769,
         0.0812,
         0.0812,
-        0.0855,
-        0.0855,
         0.0855,
         0.0855,
         0.0897,
@@ -274,68 +364,24 @@
       "tpr": [
         0.0,
         0.0026,
-        0.0128,
-        0.0179,
-        0.041,
-        0.0538,
-        0.0692,
-        0.0718,
-        0.0821,
-        0.0872,
-        0.1051,
-        0.1103,
-        0.1179,
-        0.1231,
-        0.1256,
-        0.141,
-        0.1513,
-        0.159,
-        0.1615,
-        0.1718,
-        0.1795,
-        0.1872,
-        0.1923,
-        0.1974,
-        0.2026,
-        0.2051,
         0.2077,
-        0.2128,
-        0.2205,
-        0.2231,
-        0.2282,
-        0.241,
+        0.2077,
         0.2513,
         0.2513,
-        0.2564,
-        0.2641,
         0.2692,
-        0.2718,
+        0.2692,
         0.2744,
         0.2795,
-        0.2897,
         0.2949,
-        0.2974,
-        0.3026,
-        0.3077,
-        0.3128,
-        0.3179,
-        0.3256,
+        0.2949,
         0.3333,
         0.3333,
-        0.3359,
-        0.3385,
-        0.3436,
         0.3615,
         0.3615,
         0.3641,
+        0.3692,
         0.3795,
-        0.3821,
-        0.3897,
-        0.3949,
-        0.3974,
-        0.4026,
-        0.4256,
-        0.4308,
+        0.3795,
         0.4487,
         0.4487,
         0.459,
@@ -344,13 +390,10 @@
         0.4615,
         0.5949,
         0.5949,
-        0.6,
         0.6051,
         0.6051,
         0.6923,
         0.6923,
-        0.7128,
-        0.7179,
         0.7359,
         0.7359,
         0.7641,
@@ -361,8 +404,6 @@
         0.7974,
         0.8051,
         0.8051,
-        0.8103,
-        0.8154,
         0.8538,
         0.8538,
         0.8692,
@@ -706,6 +747,7 @@
         0.9412,
         0.941,
         0.9408,
+        0.9407,
         0.9405,
         0.9403,
         0.9401,
@@ -748,6 +790,7 @@
         0.9495,
         0.9493,
         0.9492,
+        0.949,
         0.9488,
         0.9486,
         0.9485,
@@ -796,6 +839,7 @@
         0.9516,
         0.9514,
         0.9512,
+        0.951,
         0.9508,
         0.9547,
         0.9545,
@@ -865,6 +909,7 @@
         0.9551,
         0.9548,
         0.9545,
+        0.9543,
         0.954,
         0.9538,
         0.9535,
@@ -875,14 +920,19 @@
         0.9521,
         0.9518,
         0.9515,
+        0.9512,
         0.9509,
         0.9506,
+        0.9503,
         0.95,
         0.9497,
         0.9494,
         0.949,
+        0.9487,
         0.9548,
+        0.9545,
         0.9542,
+        0.9539,
         0.9536,
         0.953,
         0.9527,
@@ -894,21 +944,29 @@
         0.9577,
         0.9574,
         0.9571,
+        0.9568,
         0.9565,
         0.9562,
+        0.9559,
         0.963,
         0.9701,
+        0.9699,
+        0.9697,
         0.9695,
         0.9692,
         0.969,
         0.9688,
+        0.9685,
         0.9683,
         0.968,
         0.9677,
+        0.9675,
         0.9672,
         0.9669,
         0.9667,
+        0.9664,
         0.9746,
+        0.9744,
         0.9741,
         0.9739,
         0.9737,
@@ -916,22 +974,84 @@
         0.9732,
         0.9727,
         0.9725,
+        0.9722,
         0.9813,
+        0.9811,
         0.981,
+        0.9808,
+        0.9806,
         0.9804,
+        0.9802,
         0.98,
         0.9899,
+        0.9898,
+        0.9897,
+        0.9896,
         0.9895,
         0.9894,
         0.9892,
         0.9891,
         0.989,
         0.9889,
+        0.9888,
         0.9886,
         0.9885,
+        0.9884,
+        0.9882,
         0.9881,
         0.988,
         0.9878,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0,
         1.0,
         1.0,
         1.0,
@@ -1248,6 +1368,7 @@
         0.8205,
         0.8179,
         0.8154,
+        0.8128,
         0.8103,
         0.8077,
         0.8051,
@@ -1290,6 +1411,7 @@
         0.7231,
         0.7205,
         0.7179,
+        0.7154,
         0.7128,
         0.7103,
         0.7077,
@@ -1338,6 +1460,7 @@
         0.6051,
         0.6026,
         0.6,
+        0.5974,
         0.5949,
         0.5949,
         0.5923,
@@ -1407,6 +1530,7 @@
         0.4359,
         0.4333,
         0.4308,
+        0.4282,
         0.4256,
         0.4231,
         0.4205,
@@ -1417,14 +1541,19 @@
         0.4077,
         0.4051,
         0.4026,
+        0.4,
         0.3974,
         0.3949,
+        0.3923,
         0.3897,
         0.3872,
         0.3846,
         0.3821,
         0.3795,
+        0.3795,
+        0.3769,
         0.3744,
+        0.3718,
         0.3692,
         0.3641,
         0.3615,
@@ -1436,21 +1565,29 @@
         0.3487,
         0.3462,
         0.3436,
+        0.341,
         0.3385,
         0.3359,
         0.3333,
         0.3333,
+        0.3333,
+        0.3308,
+        0.3282,
         0.3256,
         0.3231,
         0.3205,
         0.3179,
+        0.3154,
         0.3128,
         0.3103,
         0.3077,
+        0.3051,
         0.3026,
         0.3,
         0.2974,
         0.2949,
+        0.2949,
+        0.2923,
         0.2897,
         0.2872,
         0.2846,
@@ -1459,50 +1596,112 @@
         0.2744,
         0.2718,
         0.2692,
+        0.2692,
+        0.2667,
         0.2641,
+        0.2615,
+        0.259,
         0.2564,
+        0.2538,
         0.2513,
         0.2513,
+        0.2487,
+        0.2462,
+        0.2436,
         0.241,
         0.2385,
         0.2359,
         0.2333,
         0.2308,
         0.2282,
+        0.2256,
         0.2231,
         0.2205,
+        0.2179,
+        0.2154,
         0.2128,
         0.2103,
         0.2077,
+        0.2077,
         0.2051,
         0.2026,
+        0.2,
         0.1974,
         0.1949,
         0.1923,
+        0.1897,
         0.1872,
         0.1846,
         0.1821,
         0.1795,
+        0.1769,
+        0.1744,
         0.1718,
+        0.1692,
         0.1667,
+        0.1641,
         0.1615,
         0.159,
+        0.1564,
+        0.1538,
         0.1513,
+        0.1487,
+        0.1462,
+        0.1436,
         0.141,
+        0.1385,
+        0.1359,
         0.1333,
+        0.1308,
+        0.1282,
         0.1256,
         0.1231,
+        0.1205,
         0.1179,
+        0.1154,
+        0.1128,
         0.1103,
+        0.1077,
         0.1051,
+        0.1026,
+        0.1,
+        0.0974,
+        0.0949,
+        0.0923,
+        0.0897,
         0.0872,
+        0.0846,
         0.0821,
+        0.0795,
+        0.0769,
+        0.0744,
         0.0718,
         0.0692,
+        0.0667,
+        0.0641,
+        0.0615,
+        0.059,
+        0.0564,
         0.0538,
+        0.0513,
+        0.0487,
+        0.0462,
+        0.0436,
         0.041,
+        0.0385,
+        0.0359,
+        0.0333,
+        0.0308,
+        0.0282,
+        0.0256,
+        0.0231,
+        0.0205,
         0.0179,
+        0.0154,
         0.0128,
+        0.0103,
+        0.0077,
+        0.0051,
         0.0026,
         0.0
       ]
@@ -1517,290 +1716,290 @@
       {
         "threshold": 0.01,
         "sensitivity": 1.0,
-        "specificity": 0.1581,
-        "precision": 0.6644
+        "specificity": 0.0641,
+        "precision": 0.6404
       },
       {
         "threshold": 0.02,
         "sensitivity": 1.0,
-        "specificity": 0.1838,
-        "precision": 0.6713
+        "specificity": 0.0983,
+        "precision": 0.6489
       },
       {
         "threshold": 0.03,
+        "sensitivity": 1.0,
+        "specificity": 0.1282,
+        "precision": 0.6566
+      },
+      {
+        "threshold": 0.04,
+        "sensitivity": 1.0,
+        "specificity": 0.141,
+        "precision": 0.6599
+      },
+      {
+        "threshold": 0.05,
+        "sensitivity": 1.0,
+        "specificity": 0.1538,
+        "precision": 0.6633
+      },
+      {
+        "threshold": 0.06,
+        "sensitivity": 1.0,
+        "specificity": 0.1667,
+        "precision": 0.6667
+      },
+      {
+        "threshold": 0.07,
+        "sensitivity": 1.0,
+        "specificity": 0.1709,
+        "precision": 0.6678
+      },
+      {
+        "threshold": 0.08,
+        "sensitivity": 1.0,
+        "specificity": 0.1795,
+        "precision": 0.6701
+      },
+      {
+        "threshold": 0.09,
+        "sensitivity": 1.0,
+        "specificity": 0.2009,
+        "precision": 0.6759
+      },
+      {
+        "threshold": 0.1,
         "sensitivity": 1.0,
         "specificity": 0.2051,
         "precision": 0.6771
       },
       {
-        "threshold": 0.04,
+        "threshold": 0.11,
+        "sensitivity": 1.0,
+        "specificity": 0.2179,
+        "precision": 0.6806
+      },
+      {
+        "threshold": 0.12,
         "sensitivity": 1.0,
         "specificity": 0.2265,
         "precision": 0.683
       },
       {
-        "threshold": 0.05,
+        "threshold": 0.13,
+        "sensitivity": 1.0,
+        "specificity": 0.2265,
+        "precision": 0.683
+      },
+      {
+        "threshold": 0.14,
         "sensitivity": 1.0,
         "specificity": 0.2393,
         "precision": 0.6866
       },
       {
-        "threshold": 0.06,
+        "threshold": 0.15,
         "sensitivity": 1.0,
         "specificity": 0.2436,
         "precision": 0.6878
       },
       {
-        "threshold": 0.07,
+        "threshold": 0.16,
+        "sensitivity": 1.0,
+        "specificity": 0.2521,
+        "precision": 0.6903
+      },
+      {
+        "threshold": 0.17,
         "sensitivity": 1.0,
         "specificity": 0.2564,
         "precision": 0.6915
       },
       {
-        "threshold": 0.08,
+        "threshold": 0.18,
         "sensitivity": 1.0,
         "specificity": 0.2564,
         "precision": 0.6915
       },
       {
-        "threshold": 0.09,
+        "threshold": 0.19,
         "sensitivity": 1.0,
         "specificity": 0.265,
         "precision": 0.694
       },
       {
-        "threshold": 0.1,
+        "threshold": 0.2,
+        "sensitivity": 1.0,
+        "specificity": 0.2735,
+        "precision": 0.6964
+      },
+      {
+        "threshold": 0.21,
         "sensitivity": 1.0,
         "specificity": 0.2821,
         "precision": 0.6989
       },
       {
-        "threshold": 0.11,
+        "threshold": 0.22,
         "sensitivity": 1.0,
         "specificity": 0.2863,
         "precision": 0.7002
       },
       {
-        "threshold": 0.12,
+        "threshold": 0.23,
         "sensitivity": 1.0,
         "specificity": 0.2863,
         "precision": 0.7002
       },
       {
-        "threshold": 0.13,
+        "threshold": 0.24,
         "sensitivity": 1.0,
         "specificity": 0.2863,
         "precision": 0.7002
       },
       {
-        "threshold": 0.14,
+        "threshold": 0.25,
         "sensitivity": 1.0,
         "specificity": 0.2863,
         "precision": 0.7002
       },
       {
-        "threshold": 0.15,
-        "sensitivity": 1.0,
-        "specificity": 0.2863,
-        "precision": 0.7002
-      },
-      {
-        "threshold": 0.16,
+        "threshold": 0.26,
         "sensitivity": 1.0,
         "specificity": 0.2949,
         "precision": 0.7027
       },
       {
-        "threshold": 0.17,
-        "sensitivity": 1.0,
-        "specificity": 0.3034,
-        "precision": 0.7052
-      },
-      {
-        "threshold": 0.18,
-        "sensitivity": 1.0,
-        "specificity": 0.3077,
-        "precision": 0.7065
-      },
-      {
-        "threshold": 0.19,
-        "sensitivity": 1.0,
-        "specificity": 0.3077,
-        "precision": 0.7065
-      },
-      {
-        "threshold": 0.2,
-        "sensitivity": 1.0,
-        "specificity": 0.3077,
-        "precision": 0.7065
-      },
-      {
-        "threshold": 0.21,
-        "sensitivity": 1.0,
-        "specificity": 0.312,
-        "precision": 0.7078
-      },
-      {
-        "threshold": 0.22,
-        "sensitivity": 1.0,
-        "specificity": 0.312,
-        "precision": 0.7078
-      },
-      {
-        "threshold": 0.23,
-        "sensitivity": 1.0,
-        "specificity": 0.312,
-        "precision": 0.7078
-      },
-      {
-        "threshold": 0.24,
-        "sensitivity": 1.0,
-        "specificity": 0.3162,
-        "precision": 0.7091
-      },
-      {
-        "threshold": 0.25,
-        "sensitivity": 1.0,
-        "specificity": 0.3162,
-        "precision": 0.7091
-      },
-      {
-        "threshold": 0.26,
-        "sensitivity": 1.0,
-        "specificity": 0.3162,
-        "precision": 0.7091
-      },
-      {
         "threshold": 0.27,
         "sensitivity": 1.0,
-        "specificity": 0.3162,
-        "precision": 0.7091
+        "specificity": 0.2949,
+        "precision": 0.7027
       },
       {
         "threshold": 0.28,
         "sensitivity": 1.0,
-        "specificity": 0.3248,
-        "precision": 0.7117
+        "specificity": 0.3077,
+        "precision": 0.7065
       },
       {
         "threshold": 0.29,
+        "sensitivity": 1.0,
+        "specificity": 0.3077,
+        "precision": 0.7065
+      },
+      {
+        "threshold": 0.3,
+        "sensitivity": 1.0,
+        "specificity": 0.312,
+        "precision": 0.7078
+      },
+      {
+        "threshold": 0.31,
+        "sensitivity": 1.0,
+        "specificity": 0.312,
+        "precision": 0.7078
+      },
+      {
+        "threshold": 0.32,
+        "sensitivity": 1.0,
+        "specificity": 0.312,
+        "precision": 0.7078
+      },
+      {
+        "threshold": 0.33,
+        "sensitivity": 1.0,
+        "specificity": 0.3162,
+        "precision": 0.7091
+      },
+      {
+        "threshold": 0.34,
+        "sensitivity": 1.0,
+        "specificity": 0.3162,
+        "precision": 0.7091
+      },
+      {
+        "threshold": 0.35,
+        "sensitivity": 1.0,
+        "specificity": 0.3162,
+        "precision": 0.7091
+      },
+      {
+        "threshold": 0.36,
         "sensitivity": 1.0,
         "specificity": 0.3291,
         "precision": 0.713
       },
       {
-        "threshold": 0.3,
+        "threshold": 0.37,
         "sensitivity": 1.0,
         "specificity": 0.3333,
         "precision": 0.7143
       },
       {
-        "threshold": 0.31,
+        "threshold": 0.38,
         "sensitivity": 1.0,
         "specificity": 0.3376,
         "precision": 0.7156
       },
       {
-        "threshold": 0.32,
+        "threshold": 0.39,
         "sensitivity": 1.0,
-        "specificity": 0.3376,
-        "precision": 0.7156
+        "specificity": 0.3419,
+        "precision": 0.7169
       },
       {
-        "threshold": 0.33,
-        "sensitivity": 1.0,
-        "specificity": 0.3462,
-        "precision": 0.7182
-      },
-      {
-        "threshold": 0.34,
+        "threshold": 0.4,
         "sensitivity": 1.0,
         "specificity": 0.359,
         "precision": 0.7222
       },
       {
-        "threshold": 0.35,
-        "sensitivity": 1.0,
-        "specificity": 0.359,
-        "precision": 0.7222
-      },
-      {
-        "threshold": 0.36,
+        "threshold": 0.41,
         "sensitivity": 1.0,
         "specificity": 0.3632,
         "precision": 0.7236
       },
       {
-        "threshold": 0.37,
+        "threshold": 0.42,
         "sensitivity": 1.0,
         "specificity": 0.3675,
         "precision": 0.7249
       },
       {
-        "threshold": 0.38,
-        "sensitivity": 1.0,
-        "specificity": 0.3718,
-        "precision": 0.7263
-      },
-      {
-        "threshold": 0.39,
-        "sensitivity": 1.0,
-        "specificity": 0.3761,
-        "precision": 0.7276
-      },
-      {
-        "threshold": 0.4,
-        "sensitivity": 1.0,
-        "specificity": 0.3761,
-        "precision": 0.7276
-      },
-      {
-        "threshold": 0.41,
-        "sensitivity": 1.0,
-        "specificity": 0.3803,
-        "precision": 0.729
-      },
-      {
-        "threshold": 0.42,
-        "sensitivity": 1.0,
-        "specificity": 0.3803,
-        "precision": 0.729
-      },
-      {
         "threshold": 0.43,
+        "sensitivity": 1.0,
+        "specificity": 0.3761,
+        "precision": 0.7276
+      },
+      {
+        "threshold": 0.44,
+        "sensitivity": 1.0,
+        "specificity": 0.3803,
+        "precision": 0.729
+      },
+      {
+        "threshold": 0.45,
+        "sensitivity": 1.0,
+        "specificity": 0.3803,
+        "precision": 0.729
+      },
+      {
+        "threshold": 0.46,
         "sensitivity": 1.0,
         "specificity": 0.3889,
         "precision": 0.7317
       },
       {
-        "threshold": 0.44,
-        "sensitivity": 1.0,
-        "specificity": 0.3932,
-        "precision": 0.7331
-      },
-      {
-        "threshold": 0.45,
-        "sensitivity": 1.0,
-        "specificity": 0.4017,
-        "precision": 0.7358
-      },
-      {
-        "threshold": 0.46,
-        "sensitivity": 1.0,
-        "specificity": 0.4017,
-        "precision": 0.7358
-      },
-      {
         "threshold": 0.47,
-        "sensitivity": 0.9974,
+        "sensitivity": 1.0,
         "specificity": 0.4017,
-        "precision": 0.7353
+        "precision": 0.7358
       },
       {
         "threshold": 0.48,
-        "sensitivity": 0.9974,
+        "sensitivity": 1.0,
         "specificity": 0.4017,
-        "precision": 0.7353
+        "precision": 0.7358
       },
       {
         "threshold": 0.49,
@@ -1829,290 +2028,290 @@
       {
         "threshold": 0.53,
         "sensitivity": 0.9974,
-        "specificity": 0.4017,
-        "precision": 0.7353
+        "specificity": 0.406,
+        "precision": 0.7367
       },
       {
         "threshold": 0.54,
         "sensitivity": 0.9974,
-        "specificity": 0.406,
-        "precision": 0.7367
+        "specificity": 0.4103,
+        "precision": 0.7381
       },
       {
         "threshold": 0.55,
         "sensitivity": 0.9974,
-        "specificity": 0.406,
-        "precision": 0.7367
+        "specificity": 0.4145,
+        "precision": 0.7395
       },
       {
         "threshold": 0.56,
         "sensitivity": 0.9974,
-        "specificity": 0.4103,
-        "precision": 0.7381
+        "specificity": 0.4145,
+        "precision": 0.7395
       },
       {
         "threshold": 0.57,
         "sensitivity": 0.9974,
-        "specificity": 0.4103,
-        "precision": 0.7381
+        "specificity": 0.4188,
+        "precision": 0.741
       },
       {
         "threshold": 0.58,
-        "sensitivity": 0.9974,
-        "specificity": 0.4145,
-        "precision": 0.7395
-      },
-      {
-        "threshold": 0.59,
-        "sensitivity": 0.9974,
-        "specificity": 0.4145,
-        "precision": 0.7395
-      },
-      {
-        "threshold": 0.6,
-        "sensitivity": 0.9974,
-        "specificity": 0.4145,
-        "precision": 0.7395
-      },
-      {
-        "threshold": 0.61,
-        "sensitivity": 0.9974,
-        "specificity": 0.4188,
-        "precision": 0.741
-      },
-      {
-        "threshold": 0.62,
-        "sensitivity": 0.9974,
-        "specificity": 0.4188,
-        "precision": 0.741
-      },
-      {
-        "threshold": 0.63,
         "sensitivity": 0.9974,
         "specificity": 0.4231,
         "precision": 0.7424
       },
       {
-        "threshold": 0.64,
+        "threshold": 0.59,
         "sensitivity": 0.9974,
         "specificity": 0.4274,
         "precision": 0.7438
       },
       {
-        "threshold": 0.65,
-        "sensitivity": 0.9974,
-        "specificity": 0.4274,
-        "precision": 0.7438
-      },
-      {
-        "threshold": 0.66,
+        "threshold": 0.6,
         "sensitivity": 0.9974,
         "specificity": 0.4444,
         "precision": 0.7495
       },
       {
+        "threshold": 0.61,
+        "sensitivity": 0.9974,
+        "specificity": 0.4487,
+        "precision": 0.751
+      },
+      {
+        "threshold": 0.62,
+        "sensitivity": 0.9974,
+        "specificity": 0.4487,
+        "precision": 0.751
+      },
+      {
+        "threshold": 0.63,
+        "sensitivity": 0.9974,
+        "specificity": 0.453,
+        "precision": 0.7524
+      },
+      {
+        "threshold": 0.64,
+        "sensitivity": 0.9974,
+        "specificity": 0.453,
+        "precision": 0.7524
+      },
+      {
+        "threshold": 0.65,
+        "sensitivity": 0.9974,
+        "specificity": 0.453,
+        "precision": 0.7524
+      },
+      {
+        "threshold": 0.66,
+        "sensitivity": 0.9974,
+        "specificity": 0.4573,
+        "precision": 0.7539
+      },
+      {
         "threshold": 0.67,
-        "sensitivity": 0.9974,
-        "specificity": 0.4487,
-        "precision": 0.751
-      },
-      {
-        "threshold": 0.68,
-        "sensitivity": 0.9974,
-        "specificity": 0.4487,
-        "precision": 0.751
-      },
-      {
-        "threshold": 0.69,
-        "sensitivity": 0.9974,
-        "specificity": 0.4487,
-        "precision": 0.751
-      },
-      {
-        "threshold": 0.7,
-        "sensitivity": 0.9974,
-        "specificity": 0.453,
-        "precision": 0.7524
-      },
-      {
-        "threshold": 0.71,
-        "sensitivity": 0.9974,
-        "specificity": 0.453,
-        "precision": 0.7524
-      },
-      {
-        "threshold": 0.72,
-        "sensitivity": 0.9974,
-        "specificity": 0.453,
-        "precision": 0.7524
-      },
-      {
-        "threshold": 0.73,
-        "sensitivity": 0.9974,
-        "specificity": 0.453,
-        "precision": 0.7524
-      },
-      {
-        "threshold": 0.74,
-        "sensitivity": 0.9974,
-        "specificity": 0.4573,
-        "precision": 0.7539
-      },
-      {
-        "threshold": 0.75,
-        "sensitivity": 0.9974,
-        "specificity": 0.4573,
-        "precision": 0.7539
-      },
-      {
-        "threshold": 0.76,
         "sensitivity": 0.9974,
         "specificity": 0.4658,
         "precision": 0.7568
       },
       {
-        "threshold": 0.77,
+        "threshold": 0.68,
         "sensitivity": 0.9974,
         "specificity": 0.4744,
         "precision": 0.7598
       },
       {
-        "threshold": 0.78,
+        "threshold": 0.69,
         "sensitivity": 0.9974,
         "specificity": 0.4829,
         "precision": 0.7627
       },
       {
-        "threshold": 0.79,
+        "threshold": 0.7,
         "sensitivity": 0.9974,
-        "specificity": 0.4829,
-        "precision": 0.7627
+        "specificity": 0.4872,
+        "precision": 0.7642
       },
       {
-        "threshold": 0.8,
-        "sensitivity": 0.9974,
-        "specificity": 0.4915,
-        "precision": 0.7657
-      },
-      {
-        "threshold": 0.81,
+        "threshold": 0.71,
         "sensitivity": 0.9974,
         "specificity": 0.4915,
         "precision": 0.7657
       },
       {
-        "threshold": 0.82,
+        "threshold": 0.72,
         "sensitivity": 0.9974,
         "specificity": 0.5,
         "precision": 0.7688
       },
       {
-        "threshold": 0.83,
+        "threshold": 0.73,
         "sensitivity": 0.9974,
         "specificity": 0.5085,
         "precision": 0.7718
       },
       {
-        "threshold": 0.84,
+        "threshold": 0.74,
         "sensitivity": 0.9974,
         "specificity": 0.5085,
         "precision": 0.7718
       },
       {
-        "threshold": 0.85,
+        "threshold": 0.75,
         "sensitivity": 0.9974,
         "specificity": 0.5128,
         "precision": 0.7734
       },
       {
-        "threshold": 0.86,
+        "threshold": 0.76,
         "sensitivity": 0.9974,
-        "specificity": 0.5171,
-        "precision": 0.7749
+        "specificity": 0.5214,
+        "precision": 0.7764
       },
       {
-        "threshold": 0.87,
+        "threshold": 0.77,
         "sensitivity": 0.9974,
-        "specificity": 0.5427,
-        "precision": 0.7843
+        "specificity": 0.547,
+        "precision": 0.7859
       },
       {
-        "threshold": 0.88,
+        "threshold": 0.78,
         "sensitivity": 0.9974,
-        "specificity": 0.5556,
-        "precision": 0.789
+        "specificity": 0.5641,
+        "precision": 0.7923
       },
       {
-        "threshold": 0.89,
-        "sensitivity": 0.9974,
-        "specificity": 0.5726,
-        "precision": 0.7955
-      },
-      {
-        "threshold": 0.9,
+        "threshold": 0.79,
         "sensitivity": 0.9974,
         "specificity": 0.5726,
         "precision": 0.7955
       },
       {
-        "threshold": 0.91,
+        "threshold": 0.8,
+        "sensitivity": 0.9974,
+        "specificity": 0.5726,
+        "precision": 0.7955
+      },
+      {
+        "threshold": 0.81,
         "sensitivity": 0.9974,
         "specificity": 0.5812,
         "precision": 0.7988
       },
       {
-        "threshold": 0.92,
+        "threshold": 0.82,
         "sensitivity": 0.9974,
         "specificity": 0.5855,
         "precision": 0.8004
       },
       {
-        "threshold": 0.93,
+        "threshold": 0.83,
         "sensitivity": 0.9974,
         "specificity": 0.5855,
         "precision": 0.8004
       },
       {
-        "threshold": 0.94,
+        "threshold": 0.84,
+        "sensitivity": 0.9974,
+        "specificity": 0.594,
+        "precision": 0.8037
+      },
+      {
+        "threshold": 0.85,
         "sensitivity": 0.9974,
         "specificity": 0.5983,
         "precision": 0.8054
       },
       {
-        "threshold": 0.95,
+        "threshold": 0.86,
         "sensitivity": 0.9974,
         "specificity": 0.6026,
         "precision": 0.8071
       },
       {
-        "threshold": 0.96,
+        "threshold": 0.87,
         "sensitivity": 0.9974,
         "specificity": 0.6068,
         "precision": 0.8087
       },
       {
-        "threshold": 0.97,
+        "threshold": 0.88,
+        "sensitivity": 0.9974,
+        "specificity": 0.6068,
+        "precision": 0.8087
+      },
+      {
+        "threshold": 0.89,
+        "sensitivity": 0.9974,
+        "specificity": 0.6239,
+        "precision": 0.8155
+      },
+      {
+        "threshold": 0.9,
         "sensitivity": 0.9974,
         "specificity": 0.6325,
         "precision": 0.8189
       },
       {
-        "threshold": 0.98,
+        "threshold": 0.91,
+        "sensitivity": 0.9974,
+        "specificity": 0.6538,
+        "precision": 0.8277
+      },
+      {
+        "threshold": 0.92,
         "sensitivity": 0.9949,
-        "specificity": 0.6667,
-        "precision": 0.8326
+        "specificity": 0.6709,
+        "precision": 0.8344
+      },
+      {
+        "threshold": 0.93,
+        "sensitivity": 0.9949,
+        "specificity": 0.6838,
+        "precision": 0.8398
+      },
+      {
+        "threshold": 0.94,
+        "sensitivity": 0.9949,
+        "specificity": 0.7222,
+        "precision": 0.8565
+      },
+      {
+        "threshold": 0.95,
+        "sensitivity": 0.9923,
+        "specificity": 0.7436,
+        "precision": 0.8658
+      },
+      {
+        "threshold": 0.96,
+        "sensitivity": 0.9897,
+        "specificity": 0.765,
+        "precision": 0.8753
+      },
+      {
+        "threshold": 0.97,
+        "sensitivity": 0.9846,
+        "specificity": 0.7821,
+        "precision": 0.8828
+      },
+      {
+        "threshold": 0.98,
+        "sensitivity": 0.9692,
+        "specificity": 0.8333,
+        "precision": 0.9065
       },
       {
         "threshold": 0.99,
-        "sensitivity": 0.9949,
-        "specificity": 0.7393,
-        "precision": 0.8641
+        "sensitivity": 0.9077,
+        "specificity": 0.8974,
+        "precision": 0.9365
       },
       {
         "threshold": 1.0,
-        "sensitivity": 0.0026,
+        "sensitivity": 0.0,
         "specificity": 1.0,
-        "precision": 1.0
+        "precision": 0.0
       }
     ]
   },

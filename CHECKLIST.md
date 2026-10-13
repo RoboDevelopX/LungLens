@@ -2,7 +2,7 @@
 
 Status key: ✅ done and verified by running · 🟡 written, not yet verified · ⏳ not started · ⛔ blocked
 
-Last updated: 2026-10-13, end of phase (b).
+Last updated: 2026-10-13, end of phase (c).
 
 ## Mandatory hackathon deliverables
 
@@ -20,7 +20,7 @@ Last updated: 2026-10-13, end of phase (b).
 |---|---|---|---|
 | a | Scaffolding, config, download script, patient-grouped split, data pipeline | ✅ | commit "Phase a"; `src/data.py` verified by the phase (b) training run |
 | b | Model, training, evaluation, Colab notebook | ✅ trained + evaluated · 🟡 Colab notebook written, not run (no Colab here) | DenseNet121, 2 head + 9 fine-tune epochs on 4 CPU cores (106 min, early stop), best val AUROC 0.998; test results in `reports/metrics.json` |
-| c | Grad-CAM, calibration (ECE before/after), OOD guard | ⏳ | |
+| c | Grad-CAM, calibration (ECE before/after), OOD guard | ✅ | own Grad-CAM matches `pytorch-grad-cam` (test); T = 1.61 fitted on val; guard measured in `reports/ood_eval.json`; sanity checks in `reports/sanity.json` |
 | d | Streamlit app (5 pages), < 3 s CPU inference | ⏳ | |
 | e | pytest suite | ⏳ | |
 | f | README, WALKTHROUGH, demo script, PDFs | ⏳ | |
@@ -38,12 +38,31 @@ Last updated: 2026-10-13, end of phase (b).
 | X-ray-appropriate augmentation, no horizontal flip | ✅ | `src/data.py::build_transforms` (rotation ±7°, mild crop, brightness/contrast), used in training |
 | Metrics on held-out test set: accuracy, sensitivity, specificity, precision, F1, AUROC + bootstrap 95% CIs | ✅ | `reports/metrics.json` (2,000 resamples) |
 | Figures generated only from metrics.json | ✅ | `python -m src.evaluate --figures-only` redraws all of `reports/figures/` |
-| Sensitivity-first threshold chosen on validation | ✅ | rule: highest threshold with val sensitivity >= 0.95, capped at 0.5 (cap approved by Ribhu 2026-10-13); the rule alone gave 0.996 |
+| Sensitivity-first threshold chosen on validation | ✅ | rule: highest threshold with val sensitivity >= 0.95, capped at 0.5 (cap approved by Ribhu 2026-10-13); the rule alone gave 0.970 on calibrated validation probabilities |
 
-## Results so far (copied from `reports/metrics.json`, phase b, uncalibrated)
+## Explainability, calibration and safety rules from the brief
+
+| Rule | Status | Evidence |
+|---|---|---|
+| Own Grad-CAM with hooks; `pytorch-grad-cam` only as a test cross-check | ✅ | `src/gradcam.py`; `tests/test_gradcam.py::test_matches_pytorch_grad_cam_library` passes |
+| Temperature scaling fitted on validation, ECE before/after | ✅ | T = 1.612; ECE validation 0.0166 -> 0.0068, test 0.1986 -> 0.1733 (`reports/metrics.json`, 15 bins); figure `reliability_diagram.png` |
+| "Inconclusive" zone between two configurable thresholds | ✅ | 40%-60% around the 0.5 threshold (odds within 1.5x; or set `inconclusive_low/high`); 3.4% of test X-rays land in it |
+| OOD guard: shape, grayscale and histogram checks + energy score | ✅ | thresholds from the 4,168 train X-rays only (`reports/ood_xray_stats.json`); flagged: test chest X-rays 0.5%, bone X-rays 61.5%, brain MRIs 27.5%, photos/misc 72.4%, synthetic 72.5% (`reports/ood_eval.json`) |
+| Sanity check: model randomisation + correct vs incorrect heatmaps + edge/marker attention | ✅ | randomisation test passes on 50 test X-rays (mean rank correlation 0.03 after randomising the classifier, 0.00 after also randomising the last dense block); 30 of 624 test heatmaps (4.8%) put > 50% of their weight on the outer 10% border (`reports/sanity.json`, `scripts/sanity_check.py`) |
+
+## Results so far (copied from `reports/metrics.json`, phase c, calibrated)
 
 Test set (624 X-rays) at the operating threshold 0.50: sensitivity 0.997 (95% CI 0.992-1.000), specificity 0.402
 (0.339-0.465), AUROC 0.950 (0.929-0.969); 1 missed pneumonia, 140 false alarms on 234 normal X-rays. Validation
-at the same threshold: sensitivity 1.000, specificity 0.863. The drop from validation to test is the main
-honest finding so far; it suggests the official test folder differs from the training folder in ways our
-validation split (drawn from the training folder) cannot show.
+at the same threshold: sensitivity 1.000, specificity 0.863. Temperature scaling does not move a 0.5 threshold
+(both classes stay equally likely there), so these counts are the same as in phase (b).
+
+Honest findings so far:
+- The drop from validation to test suggests the official test folder differs from the training folder in ways
+  our validation split (drawn from the training folder) cannot show.
+- Calibration fixed validation (ECE 0.017 -> 0.007) but only partly transfers to test (0.199 -> 0.173): on the
+  test folder the model is still overconfident when it says "pneumonia" (mean confidence 0.96, right 74% of the
+  time), and all 86 errors made with >= 90% confidence are normal X-rays called pneumonia.
+- The input check refuses no real test X-ray but lets 72.5% of brain MRIs through (other grayscale medical images
+  are the hardest case); the app therefore keeps the disclaimer on screen and never claims the check is complete.
+- The one missed pneumonia scored 0.48, inside the Inconclusive zone, so the app would not have called it normal.

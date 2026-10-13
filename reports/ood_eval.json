@@ -1,0 +1,72 @@
+{
+  "chest X-rays (test set)": {
+    "n": 624,
+    "ok": 621,
+    "warn": 3,
+    "reject": 0,
+    "flagged_rate": 0.0048,
+    "reject_rate": 0.0,
+    "checks_fired": {
+      "unusual_for_model": 3
+    }
+  },
+  "bone X-rays": {
+    "n": 200,
+    "ok": 77,
+    "warn": 86,
+    "reject": 37,
+    "flagged_rate": 0.615,
+    "reject_rate": 0.185,
+    "checks_fired": {
+      "unusual_shape": 101,
+      "too_small": 13,
+      "mostly_black": 12,
+      "colour": 9,
+      "unusual_for_model": 9,
+      "mostly_white": 3
+    }
+  },
+  "brain MRI": {
+    "n": 200,
+    "ok": 145,
+    "warn": 4,
+    "reject": 51,
+    "flagged_rate": 0.275,
+    "reject_rate": 0.255,
+    "checks_fired": {
+      "mostly_black": 51,
+      "unusual_shape": 4
+    }
+  },
+  "photos and misc": {
+    "n": 29,
+    "ok": 8,
+    "warn": 1,
+    "reject": 20,
+    "flagged_rate": 0.7241,
+    "reject_rate": 0.6897,
+    "checks_fired": {
+      "colour": 13,
+      "mostly_white": 4,
+      "too_small": 3,
+      "mostly_black": 3,
+      "unusual_shape": 2,
+      "blank": 2
+    }
+  },
+  "synthetic": {
+    "n": 40,
+    "ok": 11,
+    "warn": 0,
+    "reject": 29,
+    "flagged_rate": 0.725,
+    "reject_rate": 0.725,
+    "checks_fired": {
+      "blank": 20,
+      "mostly_white": 15,
+      "colour": 14,
+      "unusual_shape": 10,
+      "mostly_black": 1
+    }
+  }
+}
