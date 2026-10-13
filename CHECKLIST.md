@@ -2,7 +2,7 @@
 
 Status key: ✅ done and verified by running · 🟡 written, not yet verified · ⏳ not started · ⛔ blocked
 
-Last updated: 2026-10-13, end of phase (a).
+Last updated: 2026-10-13, end of phase (b).
 
 ## Mandatory hackathon deliverables
 
@@ -18,8 +18,8 @@ Last updated: 2026-10-13, end of phase (a).
 
 | Phase | Scope | Status | Evidence |
 |---|---|---|---|
-| a | Scaffolding, config, download script, patient-grouped split, data pipeline | ✅ split + download run · 🟡 `src/data.py` not run (PyTorch cannot be installed in this environment yet) | commit "Phase a" |
-| b | Model, training, evaluation, Colab notebook | ⛔ needs PyTorch | |
+| a | Scaffolding, config, download script, patient-grouped split, data pipeline | ✅ | commit "Phase a"; `src/data.py` verified by the phase (b) training run |
+| b | Model, training, evaluation, Colab notebook | ✅ trained + evaluated · 🟡 Colab notebook written, not run (no Colab here) | DenseNet121, 2 head + 9 fine-tune epochs on 4 CPU cores (106 min, early stop), best val AUROC 0.998; test results in `reports/metrics.json` |
 | c | Grad-CAM, calibration (ECE before/after), OOD guard | ⏳ | |
 | d | Streamlit app (5 pages), < 3 s CPU inference | ⏳ | |
 | e | pytest suite | ⏳ | |
@@ -31,8 +31,19 @@ Last updated: 2026-10-13, end of phase (a).
 |---|---|---|
 | Never commit data | ✅ | `.gitignore` excludes `data/`, `*.zip`, weights |
 | `scripts/download_data.py` via Kaggle API | ✅ | ran end to end: 5,856 images extracted |
-| Re-split train ~80/20 stratified, ignore 16-image val | ✅ | `src/split.py`, `reports/splits.csv`; train 4,171 / val 1,045 (both 74.3% pneumonia) |
+| Re-split train ~80/20 stratified, ignore 16-image val | ✅ | `src/split.py`, `reports/splits.csv`; train 4,168 / val 1,048 (both 74.3% pneumonia) |
 | Group by patient (no patient in both train and val) | ✅ | 0 shared patients (printed by `python -m src.split`) |
-| Test set untouched until final evaluation | ✅ so far | only listed in splits.csv |
-| Class imbalance handled | 🟡 | inverse-frequency weights in `src/data.py::class_weights` |
-| X-ray-appropriate augmentation, no horizontal flip | 🟡 | `src/data.py::build_transforms` |
+| Test set untouched until final evaluation | ✅ | scored once in phase (b); threshold rule fixed on validation before that; nothing tuned on test |
+| Class imbalance handled | ✅ | class-weighted cross-entropy, weights [1.944, 0.673] (printed by `src/train.py`) |
+| X-ray-appropriate augmentation, no horizontal flip | ✅ | `src/data.py::build_transforms` (rotation ±7°, mild crop, brightness/contrast), used in training |
+| Metrics on held-out test set: accuracy, sensitivity, specificity, precision, F1, AUROC + bootstrap 95% CIs | ✅ | `reports/metrics.json` (2,000 resamples) |
+| Figures generated only from metrics.json | ✅ | `python -m src.evaluate --figures-only` redraws all of `reports/figures/` |
+| Sensitivity-first threshold chosen on validation | ✅ | rule: highest threshold with val sensitivity >= 0.95, capped at 0.5 (cap approved by Ribhu 2026-10-13); the rule alone gave 0.996 |
+
+## Results so far (copied from `reports/metrics.json`, phase b, uncalibrated)
+
+Test set (624 X-rays) at the operating threshold 0.50: sensitivity 0.997 (95% CI 0.992-1.000), specificity 0.402
+(0.339-0.465), AUROC 0.950 (0.929-0.969); 1 missed pneumonia, 140 false alarms on 234 normal X-rays. Validation
+at the same threshold: sensitivity 1.000, specificity 0.863. The drop from validation to test is the main
+honest finding so far; it suggests the official test folder differs from the training folder in ways our
+validation split (drawn from the training folder) cannot show.

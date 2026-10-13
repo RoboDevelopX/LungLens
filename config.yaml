@@ -42,8 +42,12 @@ train:
   early_stop_patience: 3            # epochs without val AUROC improvement
 
 decision:
-  target_sensitivity: 0.95          # operating threshold chosen on val to reach this recall
-  inconclusive_margin: 0.10         # "Inconclusive" band = threshold +/- margin (calibrated prob)
+  target_sensitivity: 0.95          # threshold = highest one that still catches >= 95% of val pneumonia...
+  max_threshold: 0.50               # ...but never above 0.5: an X-ray rated >= 50% likely is never "normal"
+  inconclusive_odds_factor: 1.5     # "Inconclusive" when the odds of pneumonia are within 1.5x of the threshold's
+                                    # odds: 40%-60% around a 0.5 threshold; unlike +/- 0.10 it never passes 0 or 1
+  inconclusive_low: null            # optional: set BOTH to fix the band yourself, e.g. 0.30 and 0.70
+  inconclusive_high: null           # (must contain the operating threshold); null = use the odds factor
 
 ood:
   min_side_px: 150
